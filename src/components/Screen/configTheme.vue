@@ -1,9 +1,9 @@
 <template>
     <v-app>
-        <v-form>
-            <v-container>
+        <v-container>
+            <v-form>
                 <v-row>
-                    <v-col cols="12" md="4">
+                    <v-col cols="12" md="12">
                         Novo:
                     </v-col>
                 </v-row>
@@ -30,15 +30,15 @@
                         <v-btn @click="del" v-else>Excluir</v-btn>
                     </v-col>
                 </v-row>
-                <v-data-table
-                    :headers="headers"
-                    :items="themes"
-                    :items-per-page="5"
-                    class="elevation-1"
-                    @click:row="selectedRow"
-                ></v-data-table>
-            </v-container>
-        </v-form>
+            </v-form>
+            <v-data-table
+                :headers="headers"
+                :items="themes"
+                :items-per-page="5"
+                class="elevation-1"
+                @click:row="selectedRow"
+            ></v-data-table>
+        </v-container>
     </v-app>
 </template>
 
@@ -70,22 +70,18 @@ export default {
             }
         },
         getThemes(){
-            axios.get('http://localhost:4000/theme').then(res => {
+            axios.get('https://rest-api-trimemoria.herokuapp.com/theme').then(res => {
                 this.themes = res.data.data;
-                console.log(this.themes)
             })
         },
         selectedRow(value){
-            this.theme.name = ''
+            this.theme = {...value}
             this.getThemeById(value.id)
         },
         getThemeById(id){ 
             axios.get(`https://rest-api-trimemoria.herokuapp.com/theme/${id}`).then(res => {
-                console.log(id)
                 this.mode = 'Editar'
-                let {name, qntd} =  res.data.data 
-                this.theme.name = name
-                this.theme.qntd = qntd
+                this.id = id
                 let links = res.data._links
                 this.linkDelete = links[0].href
                 this.linkPut = links[1].href
@@ -98,7 +94,6 @@ export default {
             this.getThemes();
         },
         new(){
-            console.log(this.theme)
             axios.post('https://rest-api-trimemoria.herokuapp.com/theme',{name: this.theme.name, qntd: this.theme.qntd}).then((res) => {
                 this.clear()
                 console.log(res.data)
@@ -109,7 +104,7 @@ export default {
         put(){
             let change = {...this.theme, id: this.id}
             axios.put(this.linkPut,change).then(res => {
-                this.id = 0
+                this.id=0
                 this.clear()
                 console.log(res.data)
             }).catch(error => {
