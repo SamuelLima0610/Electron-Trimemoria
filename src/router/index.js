@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import configTheme from '../components/Screen/configTheme.vue'
-import configOranizationTagGame from '../components/Screen/configOrganizationTagGame.vue'
 
+import home from '../components/ScreenBasics/Home.vue'
+import configTheme from '../components/ScreenConfig/configTheme.vue'
+import configThemeImages from '../components/ScreenConfig/configThemeImages.vue'
+import configOrganizationTagGame from '../components/ScreenConfig/configOrganizationTagGame.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -14,7 +16,17 @@ const routes = [
   {
     name: 'Organizacao',
     path: '/organizacao',
-    component: configOranizationTagGame
+    component: configOrganizationTagGame
+  },
+  {
+    name: 'Imagem',
+    path: '/imagem',
+    component: configThemeImages
+  },
+  {
+    name: 'Home',
+    path: '/',
+    component: home
   }
 ]
 

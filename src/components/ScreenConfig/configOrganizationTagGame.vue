@@ -132,7 +132,6 @@ export default {
         },
         clear(){
             this.organization.name = ''
-            this.organization.qntd = 0
             this.rows = 0
             this.columns = 0
             this.config = []

@@ -15,10 +15,18 @@
         </v-list-item>
         <v-list-item link to="/organizacao">
           <v-list-item-action>
-            <v-icon>mdi-email</v-icon>
+            <v-icon>mdi-cog</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Contact</v-list-item-title>
+            <v-list-item-title>Configurações de Tags</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item link to="/imagem">
+          <v-list-item-action>
+            <v-icon>mdi-image</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Imagens</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -30,7 +38,7 @@
       dark
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Configurações</v-toolbar-title>
+      <v-toolbar-title @click="goHome">Configurações</v-toolbar-title>
     </v-app-bar>
     <router-view></router-view>
     <v-footer
@@ -46,7 +54,12 @@
 export default {
   data(){
     return {
-      drawer: null
+      drawer: null,
+    }
+  },
+  methods:{
+    goHome(){
+      this.$router.push({path: `/`})
     }
   }
 }
