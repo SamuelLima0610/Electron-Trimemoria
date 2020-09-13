@@ -1,8 +1,8 @@
 <template>
     <v-app>
         <v-container>
-            <v-form>
-                <v-container>
+            <v-form ref="form">
+                <v-container class="mt-15">
                     <v-row>
                         <v-col cols="12" md="12">
                             Novo:
@@ -14,6 +14,7 @@
                                 v-model="organization.name"
                                 label="Nome"
                                 required
+                                :rules="[rules.required]"
                             ></v-text-field>
                         </v-col>
 
@@ -22,6 +23,7 @@
                                 v-model="rows"
                                 label="Linhas:"
                                 required
+                                :rules="[rules.required]"
                             ></v-text-field>
                         </v-col>
 
@@ -30,6 +32,7 @@
                                 v-model="columns"
                                 label="Colunas:"
                                 required
+                                :rules="[rules.required]"
                             ></v-text-field>
                         </v-col>
                     </v-row>
@@ -68,6 +71,19 @@
                     </v-row>
                 </v-container>
             </v-form>
+            <v-snackbar v-model="snackbar" :timeout="timeout">
+                {{ textSnackbar }}
+                <template v-slot:action="{ attrs }">
+                    <v-btn
+                    color="blue"
+                    text
+                    v-bind="attrs"
+                    @click="snackbar = false"
+                    >
+                    Close
+                    </v-btn>
+                </template>
+            </v-snackbar>
             <v-data-table
                 :headers="headers"
                 :items="organizations"
@@ -94,12 +110,18 @@ export default {
                 { text: 'Nome',align: 'center',sortable: true,value: 'name',},
                 { text: 'Quantidade(Tags)',align: 'center',sortable: true,value: 'qntd',}
             ],
+            rules:{
+                required: value => !!value || 'Inserir'
+            },
             linkDelete: '',
             linkPut: '',
             mode:'Novo',
             id: 0,
             rows: 0,
-            columns: 0
+            columns: 0,
+            snackbar: false,
+            textSnackbar: '',
+            timeout: 5000,
         }
     },
     methods:{
@@ -140,33 +162,46 @@ export default {
             this.getOrganizations();
         },
         new(){
-            let configCoordinates = this.takeTheCoordinates()
-            axios.post(
-                'https://rest-api-trimemoria.herokuapp.com/configGame',
-                {name: this.organization.name, qntd: this.length, configurationTag: configCoordinates})
-            .then((res) => {
-                this.clear()
-                console.log(res.data)
-            }).catch( (error) => {
-                console.log(error)
-            })
+            if(this.$refs.form.validate()){
+                let configCoordinates = this.takeTheCoordinates()
+                axios.post(
+                    'https://rest-api-trimemoria.herokuapp.com/configGame',
+                    {name: this.organization.name, qntd: this.length, configurationTag: configCoordinates})
+                .then((res) => {
+                    this.clear()
+                    this.snackbar = true
+                    this.textSnackbar = res.data.data
+                }).catch( (error) => {
+                    this.snackbar = true
+                    this.textSnackbar = error.response.data.error
+                })
+            }    
         },
         put(){
-            let {name} = this.organization
-            let configCoordinates = this.takeTheCoordinates()
-            let change = {name, id: this.id, configurationTag: configCoordinates}
-            axios.put(this.linkPut,change).then(res => {
-                this.id=0
-                this.clear()
-                console.log(res.data)
-            }).catch(error => {
-                console.log(error)
-            })
+            if(this.$refs.form.validate()){
+                let {name} = this.organization
+                let configCoordinates = this.takeTheCoordinates()
+                let change = {name, id: this.id, configurationTag: configCoordinates}
+                axios.put(this.linkPut,change).then(res => {
+                    this.id=0
+                    this.clear()
+                    this.snackbar = true
+                    this.textSnackbar = res.data.data
+                }).catch(error => {
+                    this.snackbar = true
+                    this.textSnackbar = error.response.data.error
+                })
+            }    
         },
         del(){
             axios.delete(this.linkDelete).then(res => {
                 this.clear()
+                this.snackbar = true
+                this.textSnackbar = res.data.data
                 console.log(res.data)
+            }).catch(error => {
+                this.snackbar = true
+                this.textSnackbar = error.response.data.error
             })
         },
         arrowRight(){

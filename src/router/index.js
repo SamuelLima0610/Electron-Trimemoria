@@ -5,6 +5,8 @@ import home from '../components/ScreenBasics/Home.vue'
 import configTheme from '../components/ScreenConfig/configTheme.vue'
 import configThemeImages from '../components/ScreenConfig/configThemeImages.vue'
 import configOrganizationTagGame from '../components/ScreenConfig/configOrganizationTagGame.vue'
+import game from '../components/ScreenGame/Game.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -25,9 +27,14 @@ const routes = [
   },
   {
     name: 'Home',
-    path: '/',
+    path: '/home',
     component: home
-  }
+  },
+  {
+    name: 'Game',
+    path: '/',
+    component: game
+  },
 ]
 
 const router = new VueRouter({

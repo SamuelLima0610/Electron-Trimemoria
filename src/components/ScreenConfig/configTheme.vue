@@ -1,7 +1,7 @@
 <template>
     <v-app>
-        <v-container>
-            <v-form>
+        <v-container class="mt-15">
+            <v-form ref="form">
                 <v-row>
                     <v-col cols="12" md="12">
                         Novo:
@@ -12,6 +12,7 @@
                         <v-text-field
                             v-model="theme.name"
                             label="Tema"
+                            :rules="[rules.required]"
                             required
                         ></v-text-field>
                     </v-col>
@@ -19,6 +20,7 @@
                     <v-col  cols="12" md="4">
                         <v-text-field
                             v-model="theme.qntd"
+                            :rules="[rules.required]"
                             label="Quantidade de peças:"
                             required
                         ></v-text-field>
@@ -31,6 +33,19 @@
                     </v-col>
                 </v-row>
             </v-form>
+            <v-snackbar v-model="snackbar" :timeout="timeout">
+                {{ textSnackbar }}
+                <template v-slot:action="{ attrs }">
+                    <v-btn
+                    color="blue"
+                    text
+                    v-bind="attrs"
+                    @click="snackbar = false"
+                    >
+                    Close
+                    </v-btn>
+                </template>
+            </v-snackbar>
             <v-data-table
                 :headers="headers"
                 :items="themes"
@@ -58,7 +73,13 @@ export default {
             linkDelete: '',
             linkPut: '',
             mode:'Novo',
-            id: 0
+            rules:{
+                required: value => !!value || 'Inserir'
+            },
+            id: 0,
+            snackbar: false,
+            textSnackbar: '',
+            timeout: 5000,
         }
     },
     methods:{
@@ -94,27 +115,41 @@ export default {
             this.getThemes();
         },
         new(){
-            axios.post('https://rest-api-trimemoria.herokuapp.com/theme',{name: this.theme.name, qntd: this.theme.qntd}).then((res) => {
-                this.clear()
-                console.log(res.data)
-            }).catch( (error) => {
-                console.log(error)
-            })
+            if(this.$refs.form.validate()){
+                axios.post('https://rest-api-trimemoria.herokuapp.com/theme',{name: this.theme.name, qntd: this.theme.qntd}).then((res) => {
+                    this.snackbar = true
+                    this.textSnackbar = res.data.data
+                    this.clear()
+                    console.log(res.data)
+                }).catch( (error) => {
+                    this.snackbar = true
+                    this.textSnackbar = error.response.data.error
+                })
+            }    
         },
         put(){
-            let change = {...this.theme, id: this.id}
-            axios.put(this.linkPut,change).then(res => {
-                this.id=0
-                this.clear()
-                console.log(res.data)
-            }).catch(error => {
-                console.log(error)
-            })
+            if(this.$refs.form.validate()){
+                let change = {...this.theme, id: this.id}
+                axios.put(this.linkPut,change).then(res => {
+                    this.id=0
+                    this.snackbar = true
+                    this.textSnackbar = res.data.data
+                    this.clear()
+                }).catch(error => {
+                    this.snackbar = true
+                    this.textSnackbar = error.response.data.error
+                })
+            }    
         },
         del(){
             axios.delete(this.linkDelete).then(res => {
+                this.snackbar = true
+                this.textSnackbar = 'Excluido com sucesso'
                 this.clear()
                 console.log(res.data)
+            }).catch(error => {
+                this.snackbar = true
+                this.textSnackbar = error.response.data.error
             })
         }
     },
