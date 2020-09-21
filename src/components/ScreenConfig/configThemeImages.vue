@@ -131,13 +131,12 @@ export default {
       }
     },
     getImages() {
-      //'https://rest-api-trimemoria.herokuapp.com/
-      axios.get("http://localhost:4000/image").then((res) => {
+      axios.get("https://rest-api-trimemoria.herokuapp.com/image").then((res) => {
         this.saved = res.data.data;
       });
     },
     getThemes() {
-      axios.get("http://localhost:4000/theme").then((res) => {
+      axios.get("https://rest-api-trimemoria.herokuapp.com/theme").then((res) => {
         this.themes = res.data.data;
       });
     },
@@ -148,7 +147,7 @@ export default {
       this.getImageById(value.id);
     },
     getImageById(id) {
-      axios.get(`http://localhost:4000/image/${id}`).then((res) => {
+      axios.get(`https://rest-api-trimemoria.herokuapp.com/image/${id}`).then((res) => {
         this.mode = "Editar";
         this.id = id;
         let links = res.data._links;

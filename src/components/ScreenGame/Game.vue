@@ -18,7 +18,7 @@
                                             @click="ImageClicked(n)"
                                         />
                                         <v-img v-else
-                                            src="https://firebasestorage.googleapis.com/v0/b/trimemoria.appspot.com/o/Aves%2F20200728_134410.jpg?alt=media&token=1520ba04-d162-4a42-9ada-d5a90f734644"
+                                            :src="showImage(n)"
                                             aspect-ratio="1"
                                             class="grey lighten-2"
                                             @click="ImageClicked(n)"
@@ -41,7 +41,8 @@ export default {
             rows: 0,
             columns: 0,
             config: null,
-            length: 0
+            length: 0,
+            images: [],
         }
     },
     methods:{
@@ -52,11 +53,20 @@ export default {
             await axios.get(`https://rest-api-trimemoria.herokuapp.com/configGame/${id}`).then(res => {
                 this.config = res.data.data             
             })
+        },
+        async getThemeImages(theme){ 
+            axios.get(`https://rest-api-trimemoria.herokuapp.com/theme/image/${theme}`).then(res => {
+              this.images = res.data.data
+            })
+        },
+        showImage(n) {
+            return this.images[n - 1].href
         }
     },
     async created(){
         let index = 0
-        await this.getOrganizationById('3526')
+        await this.getOrganizationById(this.$route.params.config)
+        await this.getThemeImages(this.$route.params.theme)
         let coordinates = this.config.configurationTag
         coordinates.forEach(coordinate => {
             for(let chave in coordinate){

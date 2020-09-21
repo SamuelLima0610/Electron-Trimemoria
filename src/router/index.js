@@ -1,11 +1,13 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
+import homeConfig from '../components/ScreenBasics/HomeConfig.vue'
 import home from '../components/ScreenBasics/Home.vue'
 import configTheme from '../components/ScreenConfig/configTheme.vue'
 import configThemeImages from '../components/ScreenConfig/configThemeImages.vue'
 import configOrganizationTagGame from '../components/ScreenConfig/configOrganizationTagGame.vue'
 import game from '../components/ScreenGame/Game.vue'
+import setup from '../components/ScreenGame/Setup.vue'
 
 Vue.use(VueRouter)
 
@@ -26,14 +28,24 @@ const routes = [
     component: configThemeImages
   },
   {
-    name: 'Home',
-    path: '/home',
-    component: home
+    name: 'HomeConfig',
+    path: '/config',
+    component: homeConfig
   },
   {
     name: 'Game',
-    path: '/',
+    path: '/game/:theme/:config',
     component: game
+  },
+  {
+    name: 'Home',
+    path: '',
+    component: home
+  },
+  {
+    name: 'Setup',
+    path: '/setup',
+    component: setup
   },
 ]
 
