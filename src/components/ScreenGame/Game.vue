@@ -11,17 +11,16 @@
                                 :cols=columns
                             >
                                 <v-card flat tile class="d-flex" trasition="fab-transition">
-                                        <v-img v-if="image!=n"
+                                        <v-img v-if="cards[n-1].isFlipped == false"
                                             :src="`https://picsum.photos/500/300?image=${0}`"
                                             aspect-ratio="1"
                                             class="grey lighten-2"
-                                            @click="ImageClicked(n)"
+                                            @click="takeCard(n)"
                                         />
                                         <v-img v-else
                                             :src="showImage(n)"
                                             aspect-ratio="1"
                                             class="grey lighten-2"
-                                            @click="ImageClicked(n)"
                                         />
                                 </v-card>     
                             </v-col>
@@ -34,21 +33,23 @@
 
 <script>
 import axios from 'axios'
+import Vue from 'vue'
+import io from 'socket.io-client';
+let socket = null
 export default {
     data(){
         return {
-            image:'',
             rows: 0,
             columns: 0,
             config: null,
             length: 0,
             images: [],
+            cards:[],
+            pickedCards: [],
+            quantCard: 0,
         }
     },
     methods:{
-        ImageClicked(id){
-            this.image = id
-        },
         async getOrganizationById(id){ 
             await axios.get(`https://rest-api-trimemoria.herokuapp.com/configGame/${id}`).then(res => {
                 this.config = res.data.data             
@@ -61,7 +62,27 @@ export default {
         },
         showImage(n) {
             return this.images[n - 1].href
-        }
+        },
+        takeCard(n){
+            this.pickedCards.push({group:this.images[n - 1].group,index: n -1})
+            this.quantCard++
+            Vue.set(this.cards[n-1],'isFlipped',true)
+            if(this.quantCard == 2){
+                setTimeout(()=>{
+                    if(this.pickedCards[0].group == this.pickedCards[1].group){
+                        console.log('Encontrou', this.pickedCards[0].index)
+                        Vue.set(this.cards[this.pickedCards[0].index],'isFlipped',true)
+                        Vue.set(this.cards[this.pickedCards[1].index],'isFlipped',true)
+                    }else{
+                        console.log('Não Encontrou')
+                        Vue.set(this.cards[this.pickedCards[0].index],'isFlipped',false)
+                        Vue.set(this.cards[this.pickedCards[1].index],'isFlipped',false)
+                    }
+                this.quantCard = 0
+                this.pickedCards = []
+                }, 3000);
+            }
+        },
     },
     async created(){
         let index = 0
@@ -77,9 +98,26 @@ export default {
                 }
                 index++
             }
+            this.cards.push({isFlipped: false})
         })
         this.length = index
-        
+        socket = io("http://localhost:4000") 
+        socket.on('tag', (data) => {
+            let index = 0
+            let aux = 1
+            coordinates.forEach(element => {
+                let position = ''
+                for(let chave in element){
+                    position = `${chave}`
+                    if(element[position] == data.tag) index = aux
+                }
+                aux++
+            })
+            this.takeCard(index)
+        })
+    },
+    destroyed(){
+        if(socket != null) socket.disconnect(true)
     }
 }
 </script>

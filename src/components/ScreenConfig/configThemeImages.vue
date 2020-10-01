@@ -68,6 +68,19 @@
           </v-row>
         </v-container>
       </v-form>
+      <v-snackbar v-model="snackbar" :timeout="timeout">
+        {{ textSnackbar }}
+        <template v-slot:action="{ attrs }">
+          <v-btn
+            color="blue"
+            text
+            v-bind="attrs"
+            @click="snackbar = false"
+          >
+            Close
+          </v-btn>
+        </template>
+      </v-snackbar>
       <v-data-table
         :headers="headers"
         :items="saved"
@@ -106,6 +119,9 @@ export default {
       linkPut: "",
       mode: "Novo",
       id: 0,
+      snackbar: false,
+      textSnackbar: '',
+      timeout: 5000,
     };
   },
   computed: {
@@ -164,7 +180,11 @@ export default {
     },
     new() {
       if (this.$refs.form.validate()) {
-        // Create a reference to 'images/mountains.jpg'
+        let functionClear = (text) => {
+          this.clear()
+          this.snackbar = true
+          this.textSnackbar = text
+        }
         let path = `${this.image.theme}/${this.image.file.name}`;
         let { theme, group } = this.image;
         var imagesRef = storageRef.child(path);
@@ -177,9 +197,9 @@ export default {
                   group: group,
                   path: path
               }).then((res) => {
-                  console.log(res.data);
+                  functionClear(res.data.data)
               }).catch((error) => {
-                  console.log(error);
+                  functionClear(error.response.data.error)
               });
             }).catch(function (error) {
               console.log(error);
@@ -189,6 +209,11 @@ export default {
     },
     put() {
       if (this.$refs.form.validate()) {
+        let functionClear = (text) => {
+          this.clear()
+          this.snackbar = true
+          this.textSnackbar = text
+        }
         if (this.image.file != undefined){
             let path = `${this.image.theme}/${this.image.file.name}`;
             let { theme, group } = this.image;
@@ -208,10 +233,10 @@ export default {
                   id: id
                 })
                 .then((res) => {
-                  console.log(res.data);
+                  functionClear(res.data.data)
                 })
                 .catch((error) => {
-                  console.log(error);
+                  functionClear(error.response.data.error)
                 });
               }).catch(function (error) {
                 console.log(error);
