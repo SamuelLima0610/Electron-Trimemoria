@@ -7,6 +7,7 @@
             <v-col cols="12" md="12">Configuração do jogo:</v-col>
           </v-row>
           <v-row>
+            <!-- Select dos temas -->
             <v-col cols="12" md="8">
               <v-select
                 :items="themes"
@@ -15,7 +16,7 @@
                 @change="showTheme"
               ></v-select>
             </v-col>
-
+            <!--Select das configurações das tags-->
             <v-col cols="12" md="8">
               <v-select
                 :items="configsTag"
@@ -70,9 +71,11 @@ export default {
     },
     methods:{
         goBack(){
-
+          //retorna para a home
+          this.$router.push({path: '/'}) 
         },
         submit(){
+          //Pega todas as imagens relacionados aquele tema
           axios.get(`https://rest-api-trimemoria.herokuapp.com/theme/image/${this.theme}`).then(res => {
               if(res.data.data.length == this.config.configurationTag.length) this.$router.push({path: `/game/${this.theme}/${this.config.id}`})
               else{
@@ -82,19 +85,23 @@ export default {
           })
         },
         getThemes(){
+            //Pega todos os temas cadastrados na API
             axios.get('https://rest-api-trimemoria.herokuapp.com/theme').then(res => {
                 this.themes = res.data.data;
             })
         },
         getOrganizations(){
+          //Pega todos as configurações das tags cadastrados na API
           axios.get('https://rest-api-trimemoria.herokuapp.com/configGame').then(res => {
                 this.configsTag = res.data.data;
           })
         },
         showTheme(value){
+          //armazena o tema escolhido
           this.theme = value
         },
         showConfig(value){
+          //armazena a configuração escolhida
           this.configsTag.forEach( config => {
             if(config.name == value) this.config = config
           })

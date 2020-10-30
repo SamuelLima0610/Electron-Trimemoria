@@ -43,6 +43,20 @@
                     </v-card-actions>
                 </v-card>
             </v-col>
+            <v-col cols="12" class="mb-10">
+                <v-card
+                    color="#1F7087"
+                    dark
+                >
+                    <v-card-title class="headline">Configurar Dispositivo</v-card-title>
+
+                    <v-card-subtitle>Gerencie os dispositivos a serem usados no jogo.</v-card-subtitle>
+
+                    <v-card-actions>
+                    <v-btn text @click="goDevice">Editar</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-col>
         </v-row>    
     </v-container>        
 </template>
@@ -52,13 +66,20 @@ export default {
     name:'HomeConfig',
     methods:{
         goThemes(){
+            //Vai para a tela de gerenciamento de telas
             this.$router.push({path: '/temas'})
         },
         goTags(){
+            //Vai para a tela de gerenciamento de configuração de telas
             this.$router.push({path: '/organizacao'})
         },
         goImage(){
+            //Vai para a tela de gerenciamento de imagens
             this.$router.push({path: '/imagem'})
+        },
+        goDevice(){
+            //Vai para a tela de gerenciamento de imagens
+            this.$router.push({path: '/device'})
         },
     }
 }

@@ -8,6 +8,7 @@ import configThemeImages from '../components/ScreenConfig/configThemeImages.vue'
 import configOrganizationTagGame from '../components/ScreenConfig/configOrganizationTagGame.vue'
 import game from '../components/ScreenGame/Game.vue'
 import setup from '../components/ScreenGame/Setup.vue'
+import configDevice from '../components/ScreenConfig/configDevice.vue'
 
 Vue.use(VueRouter)
 
@@ -47,6 +48,11 @@ const routes = [
     path: '/setup',
     component: setup
   },
+  {
+    name: 'Device',
+    path: '/device',
+    component: configDevice
+  }
 ]
 
 const router = new VueRouter({

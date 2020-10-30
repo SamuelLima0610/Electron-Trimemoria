@@ -38,9 +38,11 @@ export default {
     name: "Home",
     methods:{
         goSetup(){
-            this.$router.push({path: '/setup'})
+            //vai para a rota de configuração do jogo
+            this.$router.push({path: '/setup'}) 
         },
         goConfig(){
+            //vai para a tela de configuração geral
             this.$router.push({path: '/config'})
         },
     }
