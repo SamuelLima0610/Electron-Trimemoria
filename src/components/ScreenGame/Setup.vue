@@ -14,6 +14,7 @@
                 label="Tema:"
                 item-text="name"
                 @change="showTheme"
+                color="warning"
               ></v-select>
             </v-col>
             <!--Select das configurações das tags-->
@@ -23,14 +24,15 @@
                 label="Configuração:"
                 item-text="name"
                 @change="showConfig"
+                color="warning"
               ></v-select>
             </v-col>
           </v-row>
 
           <v-row>
             <v-col cols="12" md="12">
-              <v-btn class="mr-4" @click="submit">Jogar</v-btn>
-              <v-btn @click="goBack" >Voltar</v-btn>
+              <v-btn class="mr-4" @click="submit" color="warning">Jogar</v-btn>
+              <v-btn @click="goBack" color="warning" >Voltar</v-btn>
             </v-col>
           </v-row>
           
@@ -66,7 +68,12 @@ export default {
             config: '',
             snackbar: false,
             timeout: 5000,
-            textSnackbar: ''
+            textSnackbar: '',
+            header: {
+                headers: {
+                    'Authorization': `Bearer pyzdQxKCneRl` 
+                }
+            }
         }
     },
     methods:{
@@ -76,7 +83,9 @@ export default {
         },
         submit(){
           //Pega todas as imagens relacionados aquele tema
-          axios.get(`https://rest-api-trimemoria.herokuapp.com/theme/image/${this.theme}`).then(res => {
+          console.log(this.theme)
+          axios.get(`https://rest-api-trimemoria.herokuapp.com/config/image/imageTheme/theme/${this.theme}`,this.header).then(res => {
+              console.log(res.data.data.length)
               if(res.data.data.length == this.config.configurationTag.length) this.$router.push({path: `/game/${this.theme}/${this.config.id}`})
               else{
                 this.snackbar = true
@@ -86,13 +95,13 @@ export default {
         },
         getThemes(){
             //Pega todos os temas cadastrados na API
-            axios.get('https://rest-api-trimemoria.herokuapp.com/theme').then(res => {
+            axios.get('https://rest-api-trimemoria.herokuapp.com/config/themes',this.header).then(res => {
                 this.themes = res.data.data;
             })
         },
         getOrganizations(){
           //Pega todos as configurações das tags cadastrados na API
-          axios.get('https://rest-api-trimemoria.herokuapp.com/configGame').then(res => {
+          axios.get('https://rest-api-trimemoria.herokuapp.com/config/configuration',this.header).then(res => {
                 this.configsTag = res.data.data;
           })
         },

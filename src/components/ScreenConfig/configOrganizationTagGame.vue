@@ -66,9 +66,9 @@
                     <!-- Fim Parte do cadastrado do arranjo das tags-->
                     <v-row>
                         <v-col  cols="12" md="4">
-                            <v-btn class="mr-4" @click="submit">{{mode}}</v-btn>
-                            <v-btn @click="clear" v-if="mode === 'Novo'">Limpar</v-btn>
-                            <v-btn @click="del" v-else>Excluir</v-btn>
+                            <v-btn class="mr-4" @click="submit" color="warning">{{mode}}</v-btn>
+                            <v-btn @click="clear" v-if="mode === 'Novo'" color="warning">Limpar</v-btn>
+                            <v-btn @click="del" v-else color="warning">Excluir</v-btn>
                         </v-col>
                     </v-row>
                 </v-container>
@@ -130,6 +130,12 @@ export default {
             snackbar: false, //controle da snackbar 
             textSnackbar: '',//Texto a ser mostrado no snackbar
             timeout: 5000,//duração do snackbar
+            url: "https://rest-api-trimemoria.herokuapp.com/config/configuration",
+            header: {
+                headers: {
+                    'Authorization': `Bearer pyzdQxKCneRl` 
+                }
+            }
         }
     },
     methods:{
@@ -142,7 +148,7 @@ export default {
         },
         getOrganizations(){
             //Pedir a lista das instâncias armazenadas (GET)
-            axios.get('https://rest-api-trimemoria.herokuapp.com/configGame').then(res => {
+            axios.get(this.url,this.header).then(res => {
                 this.organizations = res.data.data;
             })
         },
@@ -155,7 +161,7 @@ export default {
         },
         getOrganizationById(id){ 
             //Pedir uma instância armazenadas (GET)
-            axios.get(`https://rest-api-trimemoria.herokuapp.com/configGame/${id}`).then(res => {
+            axios.get(`${this.url}/${id}`,this.header).then(res => {
                 this.mode = 'Editar'
                 this.id = id
                 let links = res.data._links
@@ -178,9 +184,10 @@ export default {
             if(this.$refs.form.validate()){
                 let configCoordinates = this.takeTheCoordinates() //organiza o arranjo para o padrão desejado pela API
                 axios.post(
-                    'https://rest-api-trimemoria.herokuapp.com/configGame',
-                    {name: this.organization.name, qntd: this.length, configurationTag: configCoordinates})
-                .then((res) => {
+                    this.url,
+                    {name: this.organization.name, qntd: this.length, configurationTag: configCoordinates},
+                    this.header
+                ).then((res) => {
                     this.clear()
                     this.snackbar = true
                     this.textSnackbar = res.data.data
@@ -197,7 +204,7 @@ export default {
                 let configCoordinates = this.takeTheCoordinates() //organiza o arranjo para o padrão desejado pela API
                 //organiza a informação a ser enviada para a API
                 let change = {name, id: this.id, configurationTag: configCoordinates}
-                axios.put(this.linkPut,change).then(res => {
+                axios.put(this.linkPut,change,this.header).then(res => {
                     this.id=0
                     this.clear()
                     this.snackbar = true
@@ -210,7 +217,7 @@ export default {
         },
         del(){
             //Enviar a requisição DELETE para a API
-            axios.delete(this.linkDelete).then(res => {
+            axios.delete(this.linkDelete,this.header).then(res => {
                 this.clear()
                 this.snackbar = true
                 this.textSnackbar = res.data.data

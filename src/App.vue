@@ -42,15 +42,14 @@
 
     <v-app-bar
       app
-      color="indigo"
-      dark
+      color="#FF8C00"
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title @click="goHome">Jogo Trimemória</v-toolbar-title>
+      <v-toolbar-title @click="goHome" style="color: white;">Jogo Trimemória</v-toolbar-title>
     </v-app-bar>
     <router-view></router-view>
     <v-footer
-      color="indigo"
+      color="#FF8C00"
       app
     >
       <span class="white--text">&copy; {{ new Date().getFullYear() }}</span>
@@ -67,7 +66,7 @@ export default {
   },
   methods:{
     goHome(){
-      this.$router.push({path: `/`})
+      this.$router.push({path: `/`}).catch(()=>{});
     }
   }
 }

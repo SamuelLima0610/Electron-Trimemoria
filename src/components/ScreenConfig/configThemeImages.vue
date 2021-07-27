@@ -61,9 +61,9 @@
           <!-- (Fim) Mostra como vai ficar a imagem -->
           <v-row>
             <v-col cols="12" md="12">
-              <v-btn class="mr-4" @click="submit">{{mode}}</v-btn>
-              <v-btn @click="clear" v-if="mode === 'Novo'">Limpar</v-btn>
-              <v-btn @click="del" v-else>Excluir</v-btn>
+              <v-btn class="mr-4" @click="submit" color="warning">{{mode}}</v-btn>
+              <v-btn @click="clear" v-if="mode === 'Novo'" color="warning" >Limpar</v-btn>
+              <v-btn @click="del" v-else color="warning">Excluir</v-btn>
               <!--<v-btn class="ml-4" @click="arrowLeft" :disabled="index == 0">Anterior</v-btn>
               <v-btn class="ml-4" @click="arrowRight" :disabled="index == 0">proximo</v-btn>-->
             </v-col>
@@ -128,6 +128,12 @@ export default {
       snackbar: false,//controle da snackbar 
       textSnackbar: '',//Texto a ser mostrado no snackbar
       timeout: 5000,//duração do snackbar
+      url: "https://rest-api-trimemoria.herokuapp.com/config/imageTheme",
+      header: {
+          headers: {
+            'Authorization': `Bearer pyzdQxKCneRl` 
+          }
+      }
     };
   },
   computed: {
@@ -154,13 +160,13 @@ export default {
     },
     getImages() {
       //Pedir a lista das instâncias armazenadas (GET) (Imagens)
-      axios.get("https://rest-api-trimemoria.herokuapp.com/image").then((res) => {
+      axios.get(this.url,this.header).then((res) => {
         this.saved = res.data.data;
       });
     },
     getThemes() {
       //Pedir a lista das instâncias armazenadas (GET) (Temas)
-      axios.get("https://rest-api-trimemoria.herokuapp.com/theme").then((res) => {
+      axios.get("https://rest-api-trimemoria.herokuapp.com/config/theme",this.header).then((res) => {
         this.themes = res.data.data;
       });
     },
@@ -173,7 +179,7 @@ export default {
     },
     getImageById(id) {
       //Requisição das informações da instância escolhida na tabela
-      axios.get(`https://rest-api-trimemoria.herokuapp.com/image/${id}`).then((res) => {
+      axios.get(`${this.url}/${id}`,this.header).then((res) => {
         this.mode = "Editar";
         this.id = id;
         let links = res.data._links;
@@ -210,12 +216,13 @@ export default {
           storageRef.child(path).getDownloadURL().then(function (url) {
               //ao ser armazenado no storage, recebe o link para que a imagem possa ser mostrada na aplicação
               //e envia os dados para a API
-              axios.post("https://rest-api-trimemoria.herokuapp.com/image", {
+              axios.post(url, {
                   theme: theme,
                   url: url,
                   group: group,
-                  path: path
-              }).then((res) => {
+                  path: path,
+              },this.header
+              ).then((res) => {
                   functionClear(res.data.data)
               }).catch((error) => {
                   functionClear(error.response.data.error)
@@ -259,11 +266,10 @@ export default {
                   group: group,
                   path: path,
                   id: id
-                })
-                .then((res) => {
+                },this.header
+                ).then((res) => {
                   functionClear(res.data.data)
-                })
-                .catch((error) => {
+                }).catch((error) => {
                   functionClear(error.response.data.error)
                 });
               }).catch(function (error) {
@@ -279,7 +285,7 @@ export default {
             group: this.image.group,
             url: this.image.url,
             id: this.id
-          })
+          },this.header)
           .then((res) => {
             this.clear();
             console.log(res.data);
@@ -302,7 +308,7 @@ export default {
         });
     },
     del() { //Deletar na API
-      let functionAxios = axios.delete(this.linkDelete).then((res) => {
+      let functionAxios = axios.delete(this.linkDelete,this.header).then((res) => {
         this.clear();
         console.log(res.data);
       });

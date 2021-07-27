@@ -27,8 +27,8 @@
                     </v-col>
 
                     <v-col  cols="12" md="4">
-                        <v-btn class="mr-4" @click="submit">Enviar</v-btn>
-                        <v-btn @click="clear">Limpar</v-btn>
+                        <v-btn class="mr-4" @click="submit" color="warning">Enviar</v-btn>
+                        <v-btn @click="clear" color="warning">Limpar</v-btn>
                     </v-col>
                 </v-row>
             </v-form>

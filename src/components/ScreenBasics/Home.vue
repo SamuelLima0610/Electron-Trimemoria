@@ -3,12 +3,12 @@
         <v-row dense>
             <v-col cols="12">
                 <v-card
-                    color="#385F73"
+                    color="#FF8C00"
                     dark
                 >
-                    <v-card-title class="headline">Jogo</v-card-title>
+                    <v-card-title class="headline">Jogar</v-card-title>
 
-                    <v-card-subtitle>Jogue Trimemória</v-card-subtitle>
+                    <v-card-subtitle>Teste sua memória</v-card-subtitle>
 
                     <v-card-actions>
                     <v-btn text @click="goSetup">Jogar</v-btn>
@@ -17,7 +17,7 @@
             </v-col>
             <v-col cols="12">
                 <v-card
-                    color="#1F7087"
+                    color="#FF8C00"
                     dark
                 >
                     <v-card-title class="headline">Configurações</v-card-title>

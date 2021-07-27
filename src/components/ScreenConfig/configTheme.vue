@@ -28,9 +28,9 @@
                     </v-col>
 
                     <v-col  cols="12" md="4">
-                        <v-btn class="mr-4" @click="submit">{{mode}}</v-btn>
-                        <v-btn @click="clear" v-if="mode === 'Novo'">Limpar</v-btn>
-                        <v-btn @click="del" v-else>Excluir</v-btn>
+                        <v-btn class="mr-4 text-button" @click="submit" color="warning" >{{mode}}</v-btn>
+                        <v-btn @click="clear" v-if="mode === 'Novo'" color="warning" >Limpar</v-btn>
+                        <v-btn @click="del" v-else color="warning">Excluir</v-btn>
                     </v-col>
                 </v-row>
             </v-form>
@@ -87,6 +87,12 @@ export default {
             snackbar: false,//controle da snackbar 
             textSnackbar: '',//Texto a ser mostrado no snackbar
             timeout: 5000,//duração do snackbar
+            url: "https://rest-api-trimemoria.herokuapp.com/config/themes", // a url do terminal da api para configuraçao do tema
+            header: {
+                headers: {
+                    'Authorization': `Bearer pyzdQxKCneRl` 
+                }
+            }
         }
     },
     methods:{
@@ -99,7 +105,7 @@ export default {
         },
         getThemes(){
             //Pedir a lista das instâncias armazenadas (GET)
-            axios.get('https://rest-api-trimemoria.herokuapp.com/theme').then(res => {
+            axios.get(this.url,this.header).then(res => {
                 this.themes = res.data.data;
             })
         },
@@ -110,7 +116,7 @@ export default {
         },
         getThemeById(id){ 
             //Requisição das informações da instância escolhida na tabela
-            axios.get(`https://rest-api-trimemoria.herokuapp.com/theme/${id}`).then(res => {
+            axios.get(`${this.url}/${id}`,this.header).then(res => {
                 this.mode = 'Editar'
                 this.id = id
                 let links = res.data._links
@@ -128,7 +134,7 @@ export default {
         new(){
             if(this.$refs.form.validate()){ //verifica se o form foi validado
                 //Enviar a requisição POST para a API
-                axios.post('https://rest-api-trimemoria.herokuapp.com/theme',{name: this.theme.name, qntd: this.theme.qntd}).then((res) => {
+                axios.post(this.url,{name: this.theme.name, qntd: this.theme.qntd},this.header).then((res) => {
                     this.snackbar = true
                     this.textSnackbar = res.data.data
                     this.clear()
@@ -143,7 +149,7 @@ export default {
             //Enviar a requisição PUT para a API
             if(this.$refs.form.validate()){ //verifica se o form foi validado
                 let change = {...this.theme, id: this.id} //organiza a informação a ser enviada para a API
-                axios.put(this.linkPut,change).then(res => {
+                axios.put(this.linkPut,change,this.header).then(res => {
                     this.id=0
                     this.snackbar = true
                     this.textSnackbar = res.data.data
@@ -156,7 +162,7 @@ export default {
         },
         del(){
             //Enviar a requisição DELETE para a API
-            axios.delete(this.linkDelete).then(res => {
+            axios.delete(this.linkDelete,this.header).then(res => {
                 this.snackbar = true
                 this.textSnackbar = 'Excluido com sucesso'
                 this.clear()
@@ -175,5 +181,9 @@ export default {
 </script>
 
 <style>
+
+.text-button{
+    color: white
+}
 
 </style>

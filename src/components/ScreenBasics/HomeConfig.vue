@@ -1,9 +1,9 @@
 <template>
     <v-container class="mt-15">
         <v-row dense>
-            <v-col cols="12">
+            <v-col cols="12" class="mb-5">
                 <v-card
-                    color="#385F73"
+                    color="#FC6600"
                     dark
                 >
                     <v-card-title class="headline">Temas</v-card-title>
@@ -15,9 +15,9 @@
                     </v-card-actions>
                 </v-card>
             </v-col>
-            <v-col cols="12">
+            <v-col cols="12" class="mb-5">
                 <v-card
-                    color="#1F7087"
+                    color="#EF7215"
                     dark
                 >
                     <v-card-title class="headline">Tags</v-card-title>
@@ -29,9 +29,9 @@
                     </v-card-actions>
                 </v-card>
             </v-col>
-            <v-col cols="12" class="mb-10">
+            <v-col cols="12" class="mb-5">
                 <v-card
-                    color="#952175"
+                    color="#EF820D"
                     dark
                 >
                     <v-card-title class="headline">Imagens</v-card-title>
@@ -43,9 +43,9 @@
                     </v-card-actions>
                 </v-card>
             </v-col>
-            <v-col cols="12" class="mb-10">
+            <v-col cols="12" class="mb-5">
                 <v-card
-                    color="#1F7087"
+                    color="#FDA50F"
                     dark
                 >
                     <v-card-title class="headline">Configurar Dispositivo</v-card-title>

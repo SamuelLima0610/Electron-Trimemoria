@@ -1,36 +1,92 @@
 <template>
-        <v-row class="mt-15">
-            <v-col cols="12" sm="6" offset-sm="3">
-                <v-card>
-                    <!--Grida das cartas do jogo trimemoria-->
-                    <v-container fluid>
-                        <v-row>
-                            <v-col
-                                v-for="n in length"
-                                :key="n"
-                                class="d-flex child-flex"
-                                :cols=columns
-                            >
-                                <v-card flat tile class="d-flex" trasition="fab-transition">
-                                        <!--Imagem de fundo-->
-                                        <v-img v-if="cards[n-1].isFlipped == false"
-                                            :src="`https://picsum.photos/500/300?image=${0}`"
-                                            aspect-ratio="1"
-                                            class="grey lighten-2"
-                                            @click="takeCard(n)"
-                                        />
-                                        <!-- Imagem da carta-->
-                                        <v-img v-else
-                                            :src="showImage(n)"
-                                            aspect-ratio="1"
-                                            class="grey lighten-2"
-                                        />
-                                </v-card>     
-                            </v-col>
-                        </v-row>
-                    </v-container>
-                </v-card>
+        <v-row class="mt-15 mb-5 ml-5 mr-5">
+            <v-col cols="12">
+                <v-row>
+                    <v-col
+                        v-for="n in length"
+                        :key="n"
+                        class="d-flex child-flex"
+                        :cols=columns
+                    >
+                        <v-card outlined>
+                        <!--Imagem de fundo-->
+                        <v-img v-if="cards[n-1].isFlipped == false"
+                            contain
+                            class="ml-2 mr-2"
+                            :src="`https://firebasestorage.googleapis.com/v0/b/trimemoria.appspot.com/o/sun.png?alt=media&token=8c4c2c80-ee81-4ded-8df6-f59fc22bc2fd`"
+                            aspect-ratio="1"
+                            @click="takeCard(n)"
+                        >
+                            <template v-slot:placeholder>
+                                <v-row
+                                    class="fill-height ma-0"
+                                    align="center"
+                                    justify="center"
+                                >
+                                    <v-progress-circular
+                                    indeterminate
+                                    color="grey lighten-5"
+                                    ></v-progress-circular>
+                                </v-row>
+                            </template>
+                        </v-img>
+                        <!-- Imagem da carta-->
+                        <v-img v-else
+                        contain
+                        :src="showImage(n)"
+                        aspect-ratio="1.4"
+                        > 
+                            <template v-slot:placeholder>
+                                    <v-row
+                                        class="fill-height ma-0"
+                                        align="center"
+                                        justify="center"
+                                    >
+                                        <v-progress-circular
+                                        indeterminate
+                                        color="grey lighten-5"
+                                        ></v-progress-circular>
+                                    </v-row>
+                            </template>
+                        </v-img>
+                        </v-card> 
+                    </v-col>
+                </v-row>
             </v-col>
+            <v-dialog
+                v-model="dialog"
+                max-width="290"
+            >
+                <v-card>
+                    <v-card-title class="text-h5">
+                    Deseja conitunar jogando?
+                    </v-card-title>
+
+                    <v-card-text>
+                        Caso queira jogar com o mesmo tema clique em Jogar novamente, senão clique em ínicio!
+                    </v-card-text>
+
+                    <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                        color="yellow darken-1"
+                        text
+                        @click="goBack"
+                    >
+                        Ínicio
+                    </v-btn>
+
+                    <v-btn
+                        color="yellow darken-1"
+                        text
+                        @click="playAgain"
+                    >
+                        Jogar Novamente!!!
+                    </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-row>
 </template>
 
@@ -42,6 +98,7 @@ let socket = null
 export default {
     data(){
         return {
+            publicPath: process.env.BASE_URL,
             rows: 0, //responsavel por armazenar a quantidade de linhas da grid
             columns: 0, //responsavel por armazenar a quantidade de colunas da grid
             config: null,
@@ -50,44 +107,66 @@ export default {
             cards:[],//estados das cartas (Se esta virada ou não)
             pickedCards: [], //Armazenas as cartas escolhidas na jogada
             quantCard: 0, // quantidade de jogadas realizadas
+            header: {
+                headers: {
+                    'Authorization': `Bearer pyzdQxKCneRl` 
+                }
+            },
+            dialog: false,
         }
     },
     methods:{
+        goBack(){
+          this.dialog = false
+          //retorna para a home
+          this.$router.push({path: '/'}) 
+        },
+        playAgain(){
+          this.dialog = false
+          //vai para a rota de configuração do jogo
+          this.$router.push({path: '/setup'}) 
+        },
         async getOrganizationById(id){
             //Solicita a API a organização das tags 
-            await axios.get(`https://rest-api-trimemoria.herokuapp.com/configGame/${id}`).then(res => {
+            await axios.get(`https://rest-api-trimemoria.herokuapp.com/config/configuration/${id}`,this.header).then(res => {
                 this.config = res.data.data             
             })
         },
         async getThemeImages(theme){ 
             //Solicita a API as imagens do tema escolhido 
-            axios.get(`https://rest-api-trimemoria.herokuapp.com/theme/image/${theme}`).then(res => {
+            axios.get(`https://rest-api-trimemoria.herokuapp.com/config/image/imageTheme/theme/${theme}`, this.header).then(res => {
               this.images = res.data.data
             })
         },
         showImage(n) {
             //retorna a imagem que o jogador clicou na grid
-            return this.images[n - 1].href
+            return this.images[n - 1].url
         },
         takeCard(n){
             //realização do turno
             this.pickedCards.push({group:this.images[n - 1].group,index: n -1}) //escolha
             this.quantCard++
             Vue.set(this.cards[n-1],'isFlipped',true) // muda o estado isFlipped para true (Virada)
-            if(this.quantCard == 2){
+            if(this.quantCard == 3){
                 //Timeout para mostrar todas as cartas escolhidas
                 setTimeout(()=>{
-                    if(this.pickedCards[0].group == this.pickedCards[1].group){//verifica se pertence ao mesmo grupo
+                    if(this.pickedCards[0].group == this.pickedCards[1].group &&  this.pickedCards[1].group ==  this.pickedCards[2].group){//verifica se pertence ao mesmo grupo
                         //Deixa as cartas virada até o final do jogo
                         console.log('Encontrou', this.pickedCards[0].index)
                         Vue.set(this.cards[this.pickedCards[0].index],'isFlipped',true)
                         Vue.set(this.cards[this.pickedCards[1].index],'isFlipped',true)
+                        Vue.set(this.cards[this.pickedCards[2].index],'isFlipped',true)
+                        setTimeout(() =>{
+                            let founded = this.cards.filter(element => element['isFlipped'] == false);
+                            if(founded.length == 0) this.dialog = true;
+                        }, 1000)
                     }else{
                         //Se não encontrou o grupo certo
                         //Desvira todas as cartas
                         console.log('Não Encontrou')
                         Vue.set(this.cards[this.pickedCards[0].index],'isFlipped',false)
                         Vue.set(this.cards[this.pickedCards[1].index],'isFlipped',false)
+                        Vue.set(this.cards[this.pickedCards[2].index],'isFlipped',false)
                     }
                 this.quantCard = 0 // limpa a quantidade de jogadas realizadas
                 this.pickedCards = [] // limpa a lista das cartas escolhidas
@@ -109,6 +188,7 @@ export default {
                     let position = `${chave}`
                     this.rows = parseInt(position[0])
                     this.columns = Math.round( 12 / parseInt(position[1])) //tamanho da coluna
+                    console.log(this.columns)
                 }
                 index++
             }
