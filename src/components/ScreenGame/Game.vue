@@ -59,11 +59,11 @@
             >
                 <v-card>
                     <v-card-title class="text-h5">
-                    Deseja conitunar jogando?
+                    Jogar novamente?
                     </v-card-title>
 
                     <v-card-text>
-                        Caso queira jogar com o mesmo tema clique em Jogar novamente, senão clique em ínicio!
+                        Caso queira jogar com o mesmo tema clique em sim, senão clique em não!
                     </v-card-text>
 
                     <v-card-actions>
@@ -74,7 +74,7 @@
                         text
                         @click="goBack"
                     >
-                        Ínicio
+                        Não
                     </v-btn>
 
                     <v-btn
@@ -82,7 +82,7 @@
                         text
                         @click="playAgain"
                     >
-                        Jogar Novamente!!!
+                        Sim
                     </v-btn>
                     </v-card-actions>
                 </v-card>
@@ -136,6 +136,7 @@ export default {
             //Solicita a API as imagens do tema escolhido 
             axios.get(`https://rest-api-trimemoria.herokuapp.com/config/image/imageTheme/theme/${theme}`, this.header).then(res => {
               this.images = res.data.data
+              console.log(this.images)
             })
         },
         showImage(n) {
@@ -144,6 +145,8 @@ export default {
         },
         takeCard(n){
             //realização do turno
+            console.log(n - 1)
+            console.log(this.images[n - 1])
             this.pickedCards.push({group:this.images[n - 1].group,index: n -1}) //escolha
             this.quantCard++
             Vue.set(this.cards[n-1],'isFlipped',true) // muda o estado isFlipped para true (Virada)
@@ -179,7 +182,7 @@ export default {
         //pega a organização das tags escolhidas pelo jogador
         await this.getOrganizationById(this.$route.params.config)
         //pega as imagens do tema escolhido
-        await this.getThemeImages(this.$route.params.theme)
+        await this.getThemeImages('Monsters')
         let coordinates = this.config.configurationTag
         //a partir das configurações determinar a quantidade de linhas e colunas da grid
         coordinates.forEach(coordinate => {
@@ -200,12 +203,14 @@ export default {
         socket.on('tag', (data) => {
             let index = 0
             let aux = 1
+            console.log(data)
             //procura o index da tag detectada
             coordinates.forEach(element => {
                 let position = ''
                 for(let chave in element){
                     position = `${chave}`
-                    if(element[position] == data.tag) index = aux
+                    console.log(element[position])
+                    if(element[position] == data.detectedData.trim()) index = aux
                 }
                 aux++
             })
